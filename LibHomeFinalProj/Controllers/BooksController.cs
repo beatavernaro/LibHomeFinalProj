@@ -67,7 +67,6 @@ namespace LibHomeFinalProj.Controllers
         }
         #endregion
 
-
         #region "Add Book"
         [HttpPost]
         public async Task<ActionResult<Book>> AddBook([FromBody] Book newBook)
