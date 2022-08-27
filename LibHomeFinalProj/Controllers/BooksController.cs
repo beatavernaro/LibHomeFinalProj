@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibHomeFinalProj.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    
     public class BooksController : ControllerBase
     {
 
@@ -44,9 +45,32 @@ namespace LibHomeFinalProj.Controllers
         }
         #endregion
 
+        #region "Get By Title"
+        [HttpGet("title/{title}")]
+        public async Task<ActionResult<Book>> GetByTitle(string title) //se tem parametro tem que adicionar a rota tbm
+        {
+            var oneBook = _context.Books.Where(x => x.Title.Contains(title)).OrderBy(x => x.Id).OrderBy(x => x.Title);
+            if (oneBook == null)
+                return BadRequest("Book not found");
+            return Ok(oneBook);
+        }
+        #endregion
+
+        #region "Get By ID"
+        [HttpGet("id/{id}")]
+        public async Task<ActionResult<Book>> GetById(int id) //se tem parametro tem que adicionar a rota tbm
+        {
+            var oneBook = _context.Books.Where(x => x.Id == id);
+            if (oneBook == null)
+                return BadRequest("Book not found");
+            return Ok(oneBook);
+        }
+        #endregion
+
+
         #region "Add Book"
         [HttpPost]
-        public async Task<ActionResult<List<Book>>> AddBook([FromBody] Book newBook)
+        public async Task<ActionResult<Book>> AddBook([FromBody] Book newBook)
         {
             _context.Books.Add(newBook);
             await _context.SaveChangesAsync();
@@ -56,7 +80,7 @@ namespace LibHomeFinalProj.Controllers
 
         #region "Uptade Book"
         [HttpPut]
-        public async Task<ActionResult<List<Book>>> UpdateBook(Book request)
+        public async Task<ActionResult<List<Book>>> UpdateBook([FromBody] Book request)
         {
             var dbBook = await _context.Books.FindAsync(request.Id);
             if (dbBook == null)
@@ -65,10 +89,8 @@ namespace LibHomeFinalProj.Controllers
             dbBook.Title = request.Title;
             dbBook.Authors = request.Authors;
             dbBook.PublishedDate = request.PublishedDate;
-            dbBook.PageCount = request.PageCount;
             dbBook.Categorie = request.Categorie;
-            dbBook.Language = request.Language;
-            dbBook.Description = request.Description;
+            
 
             await _context.SaveChangesAsync();
 
